@@ -7,9 +7,41 @@ const Product = require('../models/product');
 router.get('/', async (req, res) => {
     try {
         const orders = await Order.find().populate('items.product');
-        res.render('orders/index', { orders });
+        
+        // Get unique retailer names
+        const retailers = [...new Set(orders.map(order => order.retailerName))];
+        
+        res.render('orders/index', { orders, retailers });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// Get orders by retailer name
+router.get('/retailer/:name', async (req, res) => {
+    try {
+        const retailerName = req.params.name;
+        const retailerOrders = await Order.find({ retailerName }).populate('items.product').sort({ orderDate: -1 });
+        
+        if (retailerOrders.length === 0) {
+            return res.render('orders/retailer', { 
+                retailerName, 
+                orders: [], 
+                message: 'No orders found for this retailer' 
+            });
+        }
+        
+        res.render('orders/retailer', { 
+            retailerName, 
+            orders: retailerOrders,
+            message: null // Pass null for message when orders exist
+        });
+    } catch (error) {
+        res.status(500).render('orders/retailer', { 
+            retailerName: req.params.name, 
+            orders: [],
+            message: 'Error: ' + error.message
+        });
     }
 });
 
@@ -17,7 +49,19 @@ router.get('/', async (req, res) => {
 router.get('/create', async (req, res) => {
     try {
         const products = await Product.find();
-        res.render('orders/create', { products });
+        
+        // Get unique retailer names for the dropdown
+        const allOrders = await Order.find().select('retailerName -_id');
+        const existingRetailers = [...new Set(allOrders.map(order => order.retailerName))];
+        
+        // Check if a retailer name was passed in the query
+        const preselectedRetailer = req.query.retailer || '';
+        
+        res.render('orders/create', { 
+            products, 
+            existingRetailers,
+            preselectedRetailer
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -50,6 +94,12 @@ router.post('/', async (req, res) => {
         });
 
         await order.save();
+        
+        // Redirect to retailer page if the retailer name is provided
+        if (retailerName) {
+            return res.redirect(`/orders/retailer/${encodeURIComponent(retailerName)}`);
+        }
+        
         res.redirect('/orders');
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -76,6 +126,13 @@ router.post('/:id/delete', async (req, res) => {
         if (!order) {
             return res.status(404).send('Order not found');
         }
+        
+        // Check if we need to redirect back to retailer-specific page
+        const referer = req.headers.referer;
+        if (referer && referer.includes('/orders/retailer/')) {
+            return res.redirect(referer);
+        }
+        
         res.redirect('/orders');
     } catch (error) {
         res.status(500).send('Error deleting order');

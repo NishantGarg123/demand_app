@@ -44,4 +44,38 @@
 @keyframes fadeOut {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+
+/* Retailer specific styles */
+.retailer-btn {
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.retailer-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.retailer-info-card {
+    border-left: 5px solid #17a2b8;
+}
+
+.retailer-summary {
+    font-size: 1.1rem;
+}
+
+.retailer-header {
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.retailer-header:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: #007bff;
 } 

@@ -1,0 +1,120 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><i class="fas fa-store"></i> Orders for <%= retailerName %></h2>
+            <div>
+                <a href="/orders" class="btn btn-primary">
+                    <i class="fas fa-list"></i> All Orders
+                </a>
+                <a href="/orders/create?retailer=<%= encodeURIComponent(retailerName) %>" class="btn btn-success">
+                    <i class="fas fa-plus"></i> New Order for this Retailer
+                </a>
+            </div>
+        </div>
+        
+        <% if (typeof message !== 'undefined' && message) { %>
+            <div class="alert alert-info">
+                <%= message %>
+            </div>
+        <% } %>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Retailer Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Retailer Name:</strong> <%= retailerName %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Total Orders:</strong> <%= orders.length %></p>
+                    </div>
+                </div>
+                <% if (orders.length > 0) { %>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>First Order Date:</strong> <%= new Date(orders[0].orderDate).toLocaleDateString() %></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Latest Order Date:</strong> <%= new Date(orders[orders.length - 1].orderDate).toLocaleDateString() %></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>Total Amount Spent:</strong> $<%= orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2) %></p>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>No order history found for this retailer.</p>
+                            <a href="/orders/create?retailer=<%= encodeURIComponent(retailerName) %>" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Create First Order
+                            </a>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        
+        <% if (orders.length > 0) { %>
+            <div class="table-responsive">
+                <h3>Order History</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Items</th>
+                            <th>Total Amount</th>
+                            <th>Order Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(function(order) { %>
+                            <tr data-order-id="<%= order._id %>">
+                                <td><%= order._id %></td>
+                                <td>
+                                    <ul class="list-unstyled">
+                                        <% order.items.forEach(function(item) { %>
+                                            <li>
+                                                <%= item.product.name %> - 
+                                                Quantity: <%= item.quantity %>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                </td>
+                                <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                                <td class="action-buttons">
+                                    <form class="delete-order-form delete-form" action="/orders/<%= order._id %>/delete" method="POST" data-order-id="<%= order._id %>">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    // For browsers that don't support fetch or when JS is disabled
+    // We still have the standard form submission with confirmation
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-order-form');
+        
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (!confirm('Are you sure you want to delete this order?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script> 

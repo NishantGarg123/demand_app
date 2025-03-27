@@ -4,7 +4,27 @@
         <form action="/orders" method="POST" id="orderForm">
             <div class="mb-3">
                 <label for="retailerName" class="form-label">Retailer Name</label>
-                <input type="text" class="form-control" id="retailerName" name="retailerName" required>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="retailerName" name="retailerName" list="retailerList" value="<%= typeof preselectedRetailer !== 'undefined' ? preselectedRetailer : '' %>" required>
+                    <datalist id="retailerList">
+                        <% if (existingRetailers && existingRetailers.length > 0) { %>
+                            <% existingRetailers.forEach(function(retailer) { %>
+                                <option value="<%= retailer %>">
+                            <% }); %>
+                        <% } %>
+                    </datalist>
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Select</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <% if (existingRetailers && existingRetailers.length > 0) { %>
+                            <% existingRetailers.forEach(function(retailer) { %>
+                                <li><a class="dropdown-item retailer-item" href="#" data-value="<%= retailer %>"><%= retailer %></a></li>
+                            <% }); %>
+                        <% } else { %>
+                            <li><span class="dropdown-item disabled">No existing retailers</span></li>
+                        <% } %>
+                    </ul>
+                </div>
+                <div class="form-text">Enter a new retailer name or select from existing retailers</div>
             </div>
             
             <div id="orderItems">
@@ -113,6 +133,21 @@ function updateTotalAmount() {
     document.getElementById('totalAmount').textContent = total.toFixed(2);
 }
 
-document.getElementById('orderItems').addEventListener('change', updateTotalAmount);
-document.getElementById('orderItems').addEventListener('input', updateTotalAmount);
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle retailer selection from dropdown
+    const retailerItems = document.querySelectorAll('.retailer-item');
+    const retailerNameInput = document.getElementById('retailerName');
+    
+    retailerItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            retailerNameInput.value = this.dataset.value;
+        });
+    });
+    
+    // Handle quantity and product selection changes
+    document.getElementById('orderItems').addEventListener('change', updateTotalAmount);
+    document.getElementById('orderItems').addEventListener('input', updateTotalAmount);
+});
 </script> 

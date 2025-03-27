@@ -3,7 +3,31 @@
         <h2>Orders</h2>
         <a href="/orders/create" class="btn btn-success mb-3">Create New Order</a>
         
+        <!-- Retailers Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Retailers</h5>
+            </div>
+            <div class="card-body">
+                <% if (retailers && retailers.length > 0) { %>
+                    <div class="row">
+                        <% retailers.forEach(function(retailer) { %>
+                            <div class="col-md-3 mb-2">
+                                <a href="/orders/retailer/<%= encodeURIComponent(retailer) %>" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-store"></i> <%= retailer %>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p class="text-center">No retailers found.</p>
+                <% } %>
+            </div>
+        </div>
+        
+        <!-- All Orders Section -->
         <div class="table-responsive">
+            <h3>All Orders</h3>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -24,7 +48,11 @@
                         <% orders.forEach(function(order) { %>
                             <tr data-order-id="<%= order._id %>">
                                 <td><%= order._id %></td>
-                                <td><%= order.retailerName %></td>
+                                <td>
+                                    <a href="/orders/retailer/<%= encodeURIComponent(order.retailerName) %>">
+                                        <%= order.retailerName %>
+                                    </a>
+                                </td>
                                 <td>
                                     <ul class="list-unstyled">
                                         <% order.items.forEach(function(item) { %>
