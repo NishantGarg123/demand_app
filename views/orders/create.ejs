@@ -28,20 +28,28 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-danger d-block" onclick="removeOrderItem(this)">Remove</button>
+                            <button type="button" class="btn btn-danger d-block" onclick="removeOrderItem(this)">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <button type="button" class="btn btn-secondary mb-3" onclick="addOrderItem()">Add Another Item</button>
+            <button type="button" class="btn btn-secondary mb-3" onclick="addOrderItem()">
+                <i class="fas fa-plus"></i> Add Another Item
+            </button>
             
             <div class="mb-3">
                 <h4>Total Amount: $<span id="totalAmount">0.00</span></h4>
             </div>
             
-            <button type="submit" class="btn btn-primary">Place Order</button>
-            <a href="/orders" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check"></i> Place Order
+            </button>
+            <a href="/orders" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
         </form>
     </div>
 </div>
@@ -70,7 +78,9 @@ function addOrderItem() {
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
-                    <button type="button" class="btn btn-danger d-block" onclick="removeOrderItem(this)">Remove</button>
+                    <button type="button" class="btn btn-danger d-block" onclick="removeOrderItem(this)">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
                 </div>
             </div>
         </div>

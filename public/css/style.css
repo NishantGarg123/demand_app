@@ -24,4 +24,24 @@
 
 .btn {
     margin-right: 5px;
+}
+
+.delete-form {
+    margin: 0;
+    display: inline-block;
+}
+
+.action-buttons {
+    white-space: nowrap;
+}
+
+/* Animation for deletion */
+.fade-out {
+    animation: fadeOut 0.5s;
+    opacity: 0;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
 } 

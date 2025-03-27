@@ -56,4 +56,30 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Delete order
+router.delete('/:id', async (req, res) => {
+    try {
+        const order = await Order.findByIdAndDelete(req.params.id);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// For form submission (non-AJAX)
+router.post('/:id/delete', async (req, res) => {
+    try {
+        const order = await Order.findByIdAndDelete(req.params.id);
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+        res.redirect('/orders');
+    } catch (error) {
+        res.status(500).send('Error deleting order');
+    }
+});
+
 module.exports = router; 
