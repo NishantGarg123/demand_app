@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-12">
+        <h2>Orders</h2>
+        <a href="/orders/create" class="btn btn-success mb-3">Create New Order</a>
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Retailer Name</th>
+                        <th>Items</th>
+                        <th>Total Amount</th>
+                        <th>Order Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(function(order) { %>
+                        <tr>
+                            <td><%= order._id %></td>
+                            <td><%= order.retailerName %></td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    <% order.items.forEach(function(item) { %>
+                                        <li>
+                                            <%= item.product.name %> - 
+                                            Quantity: <%= item.quantity %>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            </td>
+                            <td>$<%= order.totalAmount.toFixed(2) %></td>
+                            <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> 

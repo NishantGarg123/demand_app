@@ -1,0 +1,108 @@
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>Create New Order</h2>
+        <form action="/orders" method="POST" id="orderForm">
+            <div class="mb-3">
+                <label for="retailerName" class="form-label">Retailer Name</label>
+                <input type="text" class="form-control" id="retailerName" name="retailerName" required>
+            </div>
+            
+            <div id="orderItems">
+                <h4>Order Items</h4>
+                <div class="order-item mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Product</label>
+                            <select class="form-select" name="items[0][productId]" required>
+                                <option value="">Select Product</option>
+                                <% products.forEach(function(product) { %>
+                                    <option value="<%= product._id %>" data-price="<%= product.price %>">
+                                        <%= product.name %> - $<%= product.price.toFixed(2) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control quantity-input" name="items[0][quantity]" min="1" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-danger d-block" onclick="removeOrderItem(this)">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-secondary mb-3" onclick="addOrderItem()">Add Another Item</button>
+            
+            <div class="mb-3">
+                <h4>Total Amount: $<span id="totalAmount">0.00</span></h4>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Place Order</button>
+            <a href="/orders" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+<script>
+let itemCount = 1;
+
+function addOrderItem() {
+    const template = `
+        <div class="order-item mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Product</label>
+                    <select class="form-select" name="items[${itemCount}][productId]" required>
+                        <option value="">Select Product</option>
+                        <% products.forEach(function(product) { %>
+                            <option value="<%= product._id %>" data-price="<%= product.price %>">
+                                <%= product.name %> - $<%= product.price.toFixed(2) %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-control quantity-input" name="items[${itemCount}][quantity]" min="1" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-danger d-block" onclick="removeOrderItem(this)">Remove</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('orderItems').insertAdjacentHTML('beforeend', template);
+    itemCount++;
+    updateTotalAmount();
+}
+
+function removeOrderItem(button) {
+    button.closest('.order-item').remove();
+    updateTotalAmount();
+}
+
+function updateTotalAmount() {
+    let total = 0;
+    const items = document.querySelectorAll('.order-item');
+    
+    items.forEach(item => {
+        const select = item.querySelector('select');
+        const quantity = item.querySelector('.quantity-input').value;
+        const selectedOption = select.options[select.selectedIndex];
+        
+        if (selectedOption && selectedOption.dataset.price && quantity) {
+            total += parseFloat(selectedOption.dataset.price) * parseInt(quantity);
+        }
+    });
+    
+    document.getElementById('totalAmount').textContent = total.toFixed(2);
+}
+
+document.getElementById('orderItems').addEventListener('change', updateTotalAmount);
+document.getElementById('orderItems').addEventListener('input', updateTotalAmount);
+</script> 
